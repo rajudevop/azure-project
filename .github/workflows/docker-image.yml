@@ -1,20 +1,20 @@
+---
 name: CI/CD Pipeline
 
 on:
   push:
     branches:
-      - main  # Runs when code is pushed to main
+      - main  # Runs when code is pushed to the main branch
 
 jobs:
   lint_and_security:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout repository
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Step 2: Run Super-Linter (Lints all code: Python, JS, YAML, etc.)
+      # Run Super-Linter (Lints all code files)
       - name: Run Super-Linter
         uses: github/super-linter@v4
         env:
@@ -22,40 +22,39 @@ jobs:
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # Step 3: Run Hadolint (Lint Dockerfile only)
+      # Run Hadolint (Lint Dockerfile)
       - name: Lint Dockerfile
         run: |
           docker run --rm -i hadolint/hadolint < Dockerfile
 
-      # Step 4: Run Checkov (Security check on all files)
+      # Run Checkov (Security scan on all files)
       - name: Run Checkov Security Scan
         uses: bridgecrewio/checkov-action@v12
         with:
-          directory: .  # Scans the entire repo (Dockerfile, Terraform, YAML, etc.)
+          directory: .
           soft_fail: false  # Stop pipeline if security issues are found
 
   docker_build:
-    needs: lint_and_security  # Only runs if lint and security checks pass
+    needs: lint_and_security  # Run only if lint and security checks pass
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout repository
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Step 2: Set up Docker Buildx
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      # Step 3: Log in to Docker Hub
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.RAJU_DOCKER_USERNAME }}
           password: ${{ secrets.RAJU_DOCKER_PASSWORD }}
 
-      # Step 4: Build and Push Docker Image
       - name: Build and Push Docker Image
         run: |
-          docker buildx build --platform linux/amd64 --push \
-          -t raju15004/raju-azure-app:latest -f Dockerfile .
+          docker buildx build \
+            --platform linux/amd64 \
+            --push \
+            -t raju15004/raju-azure-app:latest \
+            -f Dockerfile .
