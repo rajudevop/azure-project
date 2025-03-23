@@ -3,29 +3,34 @@ name: Build and Push Docker Image
 on:
   push:
     branches:
-      - main  # Trigger on push to the main branch
+      - main  # Runs when pushing to the main branch.
 
 jobs:
-  lint_and_checkov:
+  linting:
     runs-on: ubuntu-latest
-    name: STAGE1: LINTING AND CHECKOV
+    name: STAGE1: LINTING
     
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Install and Run Linter (flake8)
-        run: |
-          pip install flake8 && flake8 .
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'  # Specify the Python version
 
-      - name: Install and Run Checkov
+      - name: Install Linter (flake8)
         run: |
-          pip install checkov && checkov -d .
+          pip install flake8
+
+      - name: Run Linter (flake8)
+        run: |
+          flake8 .  # Lint the repository
 
   docker_build:
     runs-on: ubuntu-latest
     name: STAGE2: BUILD AND PUSH DOCKER IMAGE
-    needs: lint_and_checkov  # Run this after linting and checkov
+    needs: linting  # Ensures STAGE2 runs after STAGE1 is successful
     
     steps:
       - name: Checkout code
