@@ -3,7 +3,7 @@ name: Build and Push Docker Image
 on:
   push:
     branches:
-      - main  # Triggers when code is pushed to the main branch
+      - main  # Runs when pushing to the main branch
 
 jobs:
   docker_build:
@@ -25,12 +25,8 @@ jobs:
           username: ${{ secrets.RAJU_DOCKER_USERNAME }}
           password: ${{ secrets.RAJU_DOCKER_PASSWORD }}
 
-      # Step 4: Build Docker image and tag it correctly
-      - name: Build Docker Image
+      # Step 4: Build and Push Docker Image
+      - name: Build and Push Docker Image
         run: |
-          docker buildx build --push --tag raju15004/raju-azure-app:latest --file Dockerfile .
-
-      # Step 5: Push the Docker image to Docker Hub
-      - name: Push Docker Image to Docker Hub
-        run: |
-          docker push raju15004/raju-azure-app:latest
+          docker buildx build --platform linux/amd64 --push \
+          -t raju15004/raju-azure-app:latest -f Dockerfile .
