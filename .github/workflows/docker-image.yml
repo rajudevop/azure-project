@@ -17,18 +17,16 @@ jobs:
       # Step 2: Set up Docker Buildx
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-	
+
       # Step 3: Log into Docker Hub using GitHub Secrets
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.RAJU_DOCKER_USERNAME }}
           password: ${{ secrets.RAJU_DOCKER_PASSWORD }}
- 
-jobs:
-  docker_deploy: 
-        # Step 4: Build and Push Docker Image
+
+      # Step 4: Build and Push Docker Image
       - name: Build and Push Docker Image
         run: |
           docker buildx build --platform linux/amd64 --push \
-          -t raju15004/raju-azure-app:latest -f Dockerfile .         
+          -t raju15004/raju-azure-app:latest -f Dockerfile .
