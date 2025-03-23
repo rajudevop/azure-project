@@ -23,15 +23,15 @@ jobs:
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          username: ${{ secrets.RAJU_DOCKER_USERNAME }}
+          password: ${{ secrets.RAJU_DOCKER_PASSWORD }}
 
       # Step 4: Build the Docker image
       - name: Build Docker image
         run: |
-          docker buildx build --raju15004/raju-azure-app:latest .
+          docker buildx build --raju15004/rajudevop/azure-project:latest .
 
       # Step 5: Push the Docker image to Docker Hub
       - name: Push Docker image
         run: |
-          docker buildx build --push --raju15004/raju-azure-app:latest .
+          docker buildx build --push --raju15004/rajudevop/azure-project:latest .
