@@ -1,0 +1,31 @@
+{
+  "name": "interview",
+  "version": "1.0.0",
+  "description": "Simple node application to connect to postgres",
+  "main": "src/index.cjs",
+  "type": "module",
+  "scripts": {
+    "server": "node src/index.cjs",
+    "test": "jest --detectOpenHandles src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tom-seechange/interview.git"
+  },
+  "author": "Tom Greenwood (SeeChange)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tom-seechange/interview/issues"
+  },
+  "homepage": "https://github.com/tom-seechange/interview#readme",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "pg": "^8.14.0"
+  },
+  "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "jest": "^29.7.0",
+    "supertest": "^7.0.0"
+  }
+}
