@@ -3,52 +3,43 @@ name: Build and Push Docker Image
 on:
   push:
     branches:
-      - main  # Runs when pushing to the main branch.
+      - main  # Trigger on push to the main branch
 
 jobs:
-  docker_build:
+  lint_and_checkov:
     runs-on: ubuntu-latest
+    name: STAGE1: LINTING AND CHECKOV
     
     steps:
-      # Step 1: Checkout the repository code.
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Step 2: Set up Docker Buildx
+      - name: Install and Run Linter (flake8)
+        run: |
+          pip install flake8 && flake8 .
+
+      - name: Install and Run Checkov
+        run: |
+          pip install checkov && checkov -d .
+
+  docker_build:
+    runs-on: ubuntu-latest
+    name: STAGE2: BUILD AND PUSH DOCKER IMAGE
+    needs: lint_and_checkov  # Run this after linting and checkov
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      # Step 3: Log into Docker Hub using GitHub Secrets
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.RAJU_DOCKER_USERNAME }}
           password: ${{ secrets.RAJU_DOCKER_PASSWORD }}
 
-      # Step 4: Run Linting (example for Python)
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.x'  # Specify the required Python version.
-          
-      - name: Install Linter
-        run: |
-          pip install flake8  # You can replace flake8 with your preferred linter.
-          
-      - name: Run Linter
-        run: |
-          flake8 .  # This will lint your codebase.
-
-      # Step 5: Run Checkov for Infrastructure as Code security scanning
-      - name: Install Checkov
-        run: |
-          pip install checkov  # Installing Checkov for security scanning.
-      
-      - name: Run Checkov
-        run: |
-          checkov -d .  # Run Checkov on the current directory, scanning for misconfigurations.
-
-      # Step 6: Build and Push Docker Image
       - name: Build and Push Docker Image
         run: |
           docker buildx build --platform linux/amd64 --push \
