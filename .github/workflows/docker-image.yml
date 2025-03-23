@@ -28,9 +28,9 @@ jobs:
       # Step 4: Build Docker image and tag it correctly
       - name: Build Docker Image
         run: |
-          docker buildx build --push --tag rajudevop/azure-project:latest --file Dockerfile .
+          docker buildx build --push --tag raju15004/raju-azure-app:latest --file Dockerfile .
 
       # Step 5: Push the Docker image to Docker Hub
       - name: Push Docker Image to Docker Hub
         run: |
-          docker push rajudevop/azure-project:latest
+          docker push raju15004/raju-azure-app:latest
